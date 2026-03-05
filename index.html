@@ -320,7 +320,7 @@
 
   <div class="stats">
     <div class="stat">
-      <div class="stat-num">10</div>
+      <div class="stat-num">12</div>
       <div class="stat-label">完成カテゴリ</div>
     </div>
     <div class="stat">
@@ -455,6 +455,30 @@
       </div>
     </div>
 
+    <div class="card" data-id="11" onclick="toggleCard(11)">
+      <div class="card-header">
+        <span class="card-num">No. 11</span>
+        <span class="card-title">人口動態・デモグラフィー</span>
+      </div>
+      <div class="card-tags">
+        <span class="tag">人口ピラミッド</span>
+        <span class="tag">少子高齢化</span>
+        <span class="tag">農地集積</span>
+      </div>
+    </div>
+
+    <div class="card" data-id="12" onclick="toggleCard(12)">
+      <div class="card-header">
+        <span class="card-num">No. 12</span>
+        <span class="card-title">エネルギー・資源地政学</span>
+      </div>
+      <div class="card-tags">
+        <span class="tag">化石燃料・再エネ</span>
+        <span class="tag">レアメタル・食料</span>
+        <span class="tag">農業コスト</span>
+      </div>
+    </div>
+
     <!-- Detail panel (injected here by JS) -->
     <div class="detail-panel" id="detail-panel"></div>
 
@@ -545,6 +569,22 @@ const data = {
       { heading: '第2期政権の構造', items: ['内閣・側近の顔ぶれと特徴', 'MAGAコアと共和党主流派の緊張', '行政命令による迅速な政策転換'] },
       { heading: '主要政策', items: ['関税・貿易保護主義の深化', '移民規制の強化と法的攻防', 'エネルギー規制緩和・パリ協定離脱'] },
       { heading: 'テクノ寡頭・中間選挙', items: ['イーロン・マスク等の政治介入', 'テクノロジー資本との同盟と亀裂', '2026年中間選挙の行方'] }
+    ]
+  },
+  11: {
+    title: '人口動態・デモグラフィー',
+    sections: [
+      { heading: '人口ピラミッド・各国比較', items: ['先進国・新興国・途上国の人口構造', '成長国（サブサハラ・南アジア）と縮小国の対比', '人口ボーナスと人口オーナスの転換点'] },
+      { heading: '日本の人口減少', items: ['2050年・2100年の人口タイムライン', '少子高齢化の構造的メカニズム', '地方消滅リスクと農村部への影響'] },
+      { heading: '農地集積と移民', items: ['人口減少による農地集積ウィンドウの示唆', '外国人労働者・移民政策の現実', '担い手不足と農業経営の再編'] }
+    ]
+  },
+  12: {
+    title: 'エネルギー・資源地政学',
+    sections: [
+      { heading: 'エネルギー構造と覇権', items: ['化石燃料・原子力・再エネの役割分担', 'エネルギー覇権をめぐる米中露の戦略', '再エネ実装の転換点と課題'] },
+      { heading: '資源地政学', items: ['レアメタル争奪戦の現状', '水・食料との複合的資源リスク', '日本のエネルギー自給率15.3%の脆弱性'] },
+      { heading: '福島・農業への示唆', items: ['福島県・阿武隈高地の再エネ先行モデル', '太陽光・風力と農業の複合利用', '農業コスト削減への実践的示唆'] }
     ]
   }
 };
