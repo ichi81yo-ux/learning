@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>12分野 統合予測 | 松本陽一</title>
+<title>12分野 学習インデックス | 松本陽一</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -18,12 +18,8 @@
     --text: #e8ede9;
     --text-muted: #8a9e91;
     --text-dim: #556660;
-    --selected-bg: rgba(74,158,127,0.12);
-    --selected-border: #4a9e7f;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -32,417 +28,97 @@
     min-height: 100vh;
     line-height: 1.7;
   }
-
-  .noise {
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 4rem 1.5rem 6rem;
-  }
-
-  header {
-    margin-bottom: 3.5rem;
-    border-bottom: 0.5px solid var(--border);
-    padding-bottom: 2rem;
-  }
-
-  .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-
-  header h1 {
-    font-family: 'Noto Serif JP', serif;
-    font-size: clamp(24px, 5vw, 36px);
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.3;
-    margin-bottom: 0.75rem;
-  }
-
-  header p {
-    font-size: 14px;
-    color: var(--text-muted);
-    max-width: 480px;
-  }
-
-  .section-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 1rem;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 8px;
-    margin-bottom: 2rem;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s, transform 0.1s;
-    user-select: none;
-  }
-
-  .card:hover {
-    border-color: var(--border-hover);
-    background: var(--surface2);
-    transform: translateY(-1px);
-  }
-
-  .card.selected {
-    background: var(--selected-bg);
-    border-color: var(--selected-border);
-  }
-
-  .card-num {
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-  }
-
-  .card.selected .card-num { color: var(--accent); }
-
-  .card-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.4;
-    margin-bottom: 4px;
-  }
-
-  .card.selected .card-title { color: var(--accent-light); }
-
-  .card-sub {
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.4;
-  }
-
-  .check {
-    display: none;
-    float: right;
-    color: var(--accent);
-    font-size: 14px;
-    margin-top: -2px;
-  }
-
-  .card.selected .check { display: inline; }
-
-  .controls {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    padding: 8px 18px;
-    font-size: 13px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-weight: 400;
-    border-radius: 6px;
-    border: 0.5px solid var(--border-hover);
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.03em;
-  }
-
-  .btn:hover {
-    background: var(--surface2);
-    color: var(--text);
-    border-color: rgba(255,255,255,0.25);
-  }
-
-  .btn-main {
-    background: var(--accent);
-    color: #0d1a14;
-    border-color: var(--accent);
-    font-weight: 500;
-    padding: 10px 28px;
-  }
-
-  .btn-main:hover {
-    background: var(--accent-light);
-    border-color: var(--accent-light);
-    color: #0d1a14;
-  }
-
-  .btn-main:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  .count-badge {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-left: auto;
-    align-self: center;
-  }
-
-  .result-wrap {
-    display: none;
-    margin-top: 2.5rem;
-    border-top: 0.5px solid var(--border);
-    padding-top: 2rem;
-    animation: fadeIn 0.4s ease;
-  }
-
-  .result-wrap.visible { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .result-title {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.4;
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 1.5rem;
-  }
-
-  .tag {
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 99px;
-    background: var(--accent-dim);
-    color: var(--accent-light);
-    border: 0.5px solid rgba(74,158,127,0.3);
-    letter-spacing: 0.05em;
-  }
-
-  .result-body {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 10px;
-    padding: 1.5rem;
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.9;
-    white-space: pre-wrap;
-  }
-
-  .spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--border-hover);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-text {
-    font-size: 13px;
-    color: var(--text-dim);
-  }
-
-  footer {
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 0.5px solid var(--border);
-    font-size: 12px;
-    color: var(--text-dim);
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  footer a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  footer a:hover { color: var(--accent-light); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  header { margin-bottom: 2.5rem; border-bottom: 0.5px solid var(--border); padding-bottom: 1.5rem; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  header h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(20px, 4vw, 28px); font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 0.5rem; }
+  header p { font-size: 13px; color: var(--text-muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 2rem; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.1s; user-select: none; }
+  .card:hover { border-color: var(--border-hover); background: var(--surface2); transform: translateY(-1px); }
+  .card.active { background: var(--accent-dim); border-color: var(--accent); }
+  .card-num { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .card.active .card-num { color: var(--accent); }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 3px; }
+  .card.active .card-title { color: var(--accent-light); }
+  .card-sub { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+  .detail-wrap { display: none; background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; animation: fadeIn 0.3s ease; }
+  .detail-wrap.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .detail-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid var(--border); }
+  .detail-title { font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 600; color: var(--text); }
+  .detail-no { font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; }
+  .detail-body { font-size: 13px; color: var(--text-muted); line-height: 1.9; white-space: pre-wrap; }
+  .close-btn { display: inline-block; margin-top: 1rem; font-size: 12px; color: var(--text-dim); cursor: pointer; border: 0.5px solid var(--border); border-radius: 6px; padding: 4px 12px; transition: all 0.15s; }
+  .close-btn:hover { color: var(--text-muted); border-color: var(--border-hover); }
+  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); font-size: 12px; color: var(--text-dim); }
 </style>
 </head>
 <body>
-<div class="noise"></div>
 <div class="wrap">
-
   <header>
-    <div class="eyebrow">2026 — 2032 統合分析</div>
-    <h1>12分野<br>近未来予測システム</h1>
-    <p>経済・気候・地政学・AI・エネルギー・人口動態など12の学習分野を統合し、近未来の傾向と農業経営への示唆を導き出します。</p>
+    <div class="eyebrow">学習インデックス</div>
+    <h1>12分野 学習内容</h1>
+    <p>分野カードをタップすると学習内容が表示されます</p>
   </header>
-
-  <div class="section-label">分野を選択</div>
   <div class="grid" id="cardGrid"></div>
-
-  <div class="controls">
-    <button class="btn" onclick="selectAll()">全選択</button>
-    <button class="btn" onclick="clearAll()">リセット</button>
-    <button class="btn btn-main" id="analyzeBtn" onclick="analyze()" disabled>統合予測を生成</button>
-    <span class="count-badge" id="countBadge">0 / 12 分野</span>
-  </div>
-
-  <div class="result-wrap" id="resultWrap">
-    <div class="result-header">
-      <div class="result-title" id="resultTitle"></div>
+  <div class="detail-wrap" id="detailWrap">
+    <div class="detail-header">
+      <div class="detail-title" id="detailTitle"></div>
+      <div class="detail-no" id="detailNo"></div>
     </div>
-    <div class="tags" id="tagRow"></div>
-    <div class="result-body" id="resultBody"></div>
+    <div class="detail-body" id="detailBody"></div>
+    <span class="close-btn" onclick="closeDetail()">閉じる</span>
   </div>
-
-  <footer>
-    <span>松本陽一 — 福島県小野町 農業経営</span>
-    <a href="./index.html">← 学習インデックスへ戻る</a>
-  </footer>
-
+  <footer>松本陽一 — 福島県田村郡小野町 農業経営</footer>
 </div>
-
 <script>
-const API_URL = "https://api.anthropic.com/v1/messages";
+const summaries = {
+  1: { title:"経済指標", sub:"金利・インフレ・雇用", content:`■ 金利・金融政策\n・政策金利は中央銀行が設定し、消費・投資・景気全体に波及する\n・利上げ＝インフレ抑制・景気冷却、利下げ＝景気刺激という基本構造\n・実質金利（名目金利－インフレ率）と逆イールドが重要なシグナル\n\n■ インフレ・物価指数\n・主要指標：CPI・コアCPI・PCEデフレーター・PPI\n・インフレの種類：ディマンドプル型（需要超過）とコストプッシュ型（コスト高騰）\n・多くの中央銀行は2%インフレ目標を設定\n\n■ 雇用・失業率\n・主要指標：失業率・NFP（米）・有効求人倍率（日）・労働参加率\n・失業率単独では実態を過小評価しやすく、労働参加率との併読が重要\n・FRBは「物価安定＋最大雇用」のデュアルマンデートを持つ\n\n■ 3指標の相互連関\n・景気好調→雇用増→賃金上昇→インフレ上昇→利上げ→景気冷却という循環が基本構造\n・地政学リスク起因のエネルギー高騰は供給側からインフレを押し上げるため利上げで抑制しにくい\n・指標は単独でなく、相互関係で読むことが核心` },
+  2: { title:"気候変動", sub:"自然災害・温暖化", content:`■ 気候変動の基礎メカニズム\n・温室効果ガス（CO₂・CH₄・N₂O）の増加により地球の平均気温が上昇\n・産業革命前比で既に約+1.1〜1.2℃上昇。2℃超えでティッピングポイントのリスクが急増\n・IPCCは2030年代前半に+1.5℃到達の可能性を警告\n\n■ 自然災害への影響\n・台風・ハリケーン：海面水温上昇により強度が増大\n・豪雨・洪水：短時間集中豪雨が増加\n・干ばつ：内陸部の乾燥化が進行\n・森林火災：乾燥化・高温化により延焼規模が拡大\n\n■ 日本への影響\n・台風の大型化・線状降水帯の頻発化\n・熱波・酷暑：農業・電力需要・熱中症に大きな影響\n\n■ 対策の枠組み\n・緩和策：排出削減・再生可能エネルギー・脱炭素\n・適応策：堤防強化・耐熱作物・早期警報システム\n・食料・水・エネルギーの「トリプルクライシス」リスクが地政学と連動` },
+  3: { title:"プロフィール", sub:"小野町・8反・自律型", content:`■ 基本プロフィール\n・福島県田村郡小野町在住の農業経営者\n・田畑8反を経営。トラクター・重機・農具一式を自己保有\n・経歴：東京アパレル業界→商業施設運営管理→株式トレーダー（独立）→就農\n\n■ 経営哲学・行動スタイル\n・「70〜80%の下準備を完了させ、残りの不確実性に対してリスクを取る」自律型経営\n・組織依存ではなく、個人の判断と実行力を軸に置く\n\n■ 学習・思考の目的\n・世界情勢・経済・気候変動など12分野を並行して学び、統合的に思考する\n・自身の生存戦略・経営判断に活かすことを目的としている\n\n■ AI活用体制\n・Claude（主軸・分析統合）＋Gemini（セカンドオピニオン・検証）の併用\n・12分野の学習チャット＋統合チャットで運用` },
+  4: { title:"予言・スピリチュアル", sub:"JT・LJ・藤原直哉", content:`■ スピリットマンJT（ジョセフ・ティテル）\n・アメリカ人のサイキック・メディウム。20年以上の経歴を持つ\n・霊（スピリット）からビジョンやメッセージを受け取り予言する\n\n■ サイキックLJ（ルイーズ・ジョーンズ）\n・イギリス在住のサイキッカー・占星術師\n・「タイムラインは複数あり、起きない可能性もある」と自ら断りを入れる姿勢\n\n■ 藤原直哉（経済アナリスト）\n・東大経済学部卒。経済データ・歴史的サイクル・国際情勢の総合分析\n・大本（おおもと）神諭に基づく精神的背景を持つ\n\n■ 3人に共通する世界観\n・「現代文明は大きな転換期にある」という見立て\n・超常的な知覚と学術・歴史分析、異なるアプローチから同じ方向性の未来観を語る` },
+  5: { title:"国際情勢", sub:"中東・ウクライナ・米中", content:`■ 国際情勢を読む基本構造\n・紛争・外交・経済制裁は「各国の利害と思惑のすれ違い」として読む\n・地政学リスクはエネルギー・食料・金融を通じて農業経営に直結する\n\n■ ロシア・ウクライナ情勢の構造\n・「三者の思惑のすれ違い」が交渉を難しくする基本構造\n・停戦だけでは再侵攻を防げず、抑止の再設計が本質的課題\n\n■ 中東情勢の構造\n・ホルムズ海峡は世界の石油輸送量の約20〜30%が通過する最重要エネルギー咽喉部\n・中東の不安定化は原油価格・農業コスト・食料安全保障に直結する\n\n■ 米中関係・覇権争いの構造\n・技術・経済・軍事の3層で覇権争いが展開\n・台湾問題はインド太平洋全体の安全保障と連動\n\n■ 日本の立ち位置\n・エネルギー・食料・安全保障の3点で「同盟頼みから自律型対応」への転換が迫られる` },
+  6: { title:"社会問題", sub:"格差・AI・少子化", content:`■ 格差・貧困問題\n・極度の貧困率は過去30年で約40%→約10%に劇的改善\n・ただし世界28億人以上が「脆弱層」として経済ショックで貧困転落リスクを抱える\n\n■ デジタル化・AI\n・誤情報・偽情報が世界経済フォーラムのリスク調査で上位を占める\n・自動化リスクは女性の職種に約2倍の割合で集中\n・AI導入による国家間・階層間の格差拡大をUNDPが警告\n\n■ 少子高齢化・人口問題\n・超高齢社会では年金危機と介護労働力不足が深刻化\n・少子化は経済成長・社会保障・農業担い手問題に連鎖する\n\n■ 5テーマに共通する構造\n・富と権力の頂点集中、気候災害・経済ショック・紛争が開発の成果を消去\n・5問題は相互に連動する「複合的危機」として進行中` },
+  7: { title:"日本", sub:"政治・経済・災害", content:`■ 地理・自然・農業\n・国土の約70%が山地、農地は国土の約12%と少ない\n・農業は米作中心。農家平均年齢約68歳、担い手不足が深刻\n\n■ 政治・経済\n・世界第4位のGDP。30年超のデフレ後、2024年に転換点へ\n・少子化・社会保障費増大・財政悪化が長期的な構造問題\n\n■ 歴史・文化\n・農耕社会由来の集団主義・協調性・自然への畏敬が文化の根底にある\n\n■ 地殻・災害リスク\n・4つのプレートが交差する世界有数の地震・火山大国\n・南海トラフ地震：今後30年以内に発生確率70〜80%\n\n■ テーマ間の連関\n・人口減少→農地集積のウィンドウ→自律型農業経営者の相対的優位という構造` },
+  8: { title:"宇宙・太陽系", sub:"太陽活動・宇宙線", content:`■ 太陽活動と地球への影響\n・太陽は11年周期で活動が変動。極大期はフレア・CMEが頻発\n・地磁気嵐・GPS障害・送電網障害を引き起こす可能性がある\n・黒点が少ない時代（マウンダー極小期）は小氷期と一致\n\n■ 月の引力・潮汐力\n・月がなければ地軸は大きく揺れ気候が激変していた（地軸安定機能）\n\n■ 地球の3層の防御構造\n・太陽圏（銀河宇宙線を弾くバブル）\n・地球磁気圏（溶融鉄の核が作る磁場で太陽風を偏向）\n・大気圏（電離層・オゾン層が残余を吸収）\n\n■ ミランコビッチサイクル\n・惑星重力の蓄積で地球の公転軌道・地軸傾斜・歳差運動が変化\n・氷河期・間氷期の主因。現在は間氷期の後半にあたる\n\n■ 農業への接点\n・太陽活動極大期：農機の自動走行GPS誤差・電波障害のリスク増大` },
+  9: { title:"支配層・ディープステート", sub:"エプスタイン・権力構造", content:`■ エプスタイン事件の事実\n・ジェフリー・エプスタイン（1953〜2019）は未成年者への性的人身売買罪で有罪\n・裁判記録・文書公開によって証明されたエリート特権の実態\n\n■ パワーエリート概念（C・ライト・ミルズ、1956年）\n・政治・軍事・経済エリートの3者が相互に結びつき、民主的プロセスを経ずに意思決定する構造\n\n■ ディープステートの3つの意味\n・【歴史的事実】トルコ「デリン・デヴレット」：実在した非公式権力網\n・【学術的定義】軍産複合体・官僚機構が選挙によらず政策に影響を及ぼす構造\n・【陰謀論的使用】トランプ政治運動・QAnonでの拡大使用。学術的概念との混同に注意\n\n■ 整理の視点\n・「権力の集中」「二層の司法」「透明性の欠如」は民主主義の構造的課題として継続的に注視すべき問題` },
+  10: { title:"アメリカ・トランプ", sub:"第2次政権・政策構造", content:`■ 第2次トランプ政権の基本構造\n・支持基盤は「同床異夢」の3勢力：MAGA派・テクノオリガルヒ・対中強硬派\n・「超実利主義」＝その都度の部分最適を成果として誇示するスタイル\n\n■ 主要政策の構造\n・関税・貿易：保護主義的関税を推進\n・エネルギー：化石燃料促進・クリーンエネルギー政策の大幅転換\n・移民：南部国境の不法越境抑制を重視\n・国際協調：多国間主義から後退する傾向\n\n■ 思惑と現実のギャップを読む視点\n・製造業雇用回復を掲げるが、投資はAI分野に集中する構造\n・恩恵は富裕層に偏り、低中所得層は関税負担増で消費抑制→「K字型経済」深刻化\n\n■ 米国動向を読む上での重要視点\n・3勢力の利害対立が政策の一貫性を損なう\n・中間選挙を見据えた政治的インセンティブが政策転換の契機になる\n・米国の動向は日本の関税・エネルギー・安全保障政策に直結する` },
+  11: { title:"人口動態", sub:"少子化・移民・農地集積", content:`■ 人口ピラミッドの読み方\n・富士山型（拡大型）＝アフリカ等の発展途上国。人口ボーナス期\n・釣り鐘型（安定型）＝米国・一部欧州。社会保障が安定\n・壺型（縮小型）＝日本・韓国・ドイツ。少子高齢化が構造化\n・人口は20〜30年先まで「ほぼ確実に」予測できる唯一の指標\n\n■ 日本の人口減少タイムライン\n・2008年（約1億2,808万人）をピークに減少局面へ\n・2040年：高齢者約3,900万人に膨張（2040年問題）\n・2050年：1億人を割り込む。生産年齢人口が現在比約3割減\n\n■ 少子高齢化の構造的影響\n・農業：今後10〜15年で大量リタイア→農地集積のウィンドウが最大化\n・社会保障：2040年には約1.5人で1人を支える見通し\n\n■ 移民・外国人労働者との連動\n・2024年に技能実習制度廃止→育成就労制度へ移行\n\n■ 農業経営への示唆\n・今後10年が農地集積の最大のウィンドウ\n・人口減少下での食料安全保障の再評価は国内農業経営者の地位を押し上げる` },
+  12: { title:"エネルギー・資源地政学", sub:"資源・再エネ・農業コスト", content:`■ 世界のエネルギー構造\n・世界の一次エネルギーの約80%は依然として化石燃料が占める\n・OPECプラス（サウジ＋ロシア）が生産調整を握る\n・再エネはコスト面で既存電源を逆転しつつあるが、蓄電・系統整備が世界的課題\n\n■ エネルギーと覇権\n・米国：シェール＋LNG輸出でエネルギー自給達成\n・ロシア：エネルギーを地政学的武器として使用\n・中国：太陽光パネル・EV・蓄電池の製造で「再エネ時代の覇権」を狙う\n・覇権の軸は「産出」から「製造技術・インフラ・通貨」へ転換中\n\n■ 資源地政学\n・レアアース：中国が精製90%以上を独占\n・肥料原料：リンはモロッコ・中国、カリウムはロシア・ベラルーシに偏在\n・窒素肥料は天然ガス由来のため、エネルギー価格と農業コストが直結する\n\n■ 日本のエネルギー自給率と脆弱性\n・自給率15.3%という構造的脆弱性\n・福島県は再エネ先行モデル地として戦略的に位置づけられ、小野町・田村郡エリアも実施圏内\n\n■ 農業経営者への示唆\n・燃料費（軽油・灯油）は中東・地政学情勢に直結する\n・化学肥料は地政学リスク直結品目。有機質肥料・堆肥化による資源循環が有効\n・ソーラーシェアリングと小型蓄電池の自家消費モデルが現実的選択肢` }
+};
 
-const categories = [
-  { no:1,  title:"経済指標",       sub:"金利・インフレ・雇用" },
-  { no:2,  title:"気候変動",       sub:"自然災害・温暖化" },
-  { no:3,  title:"プロフィール",   sub:"小野町・8反・自律型" },
-  { no:4,  title:"予言・スピリチュアル", sub:"JT・LJ・藤原直哉" },
-  { no:5,  title:"国際情勢",       sub:"中東・ウクライナ・米中" },
-  { no:6,  title:"社会問題",       sub:"格差・AI・少子化" },
-  { no:7,  title:"日本",           sub:"政治・経済・災害" },
-  { no:8,  title:"宇宙・太陽系",   sub:"太陽活動・宇宙線" },
-  { no:9,  title:"支配層",         sub:"エプスタイン・権力構造" },
-  { no:10, title:"アメリカ",       sub:"トランプ・中間選挙" },
-  { no:11, title:"人口動態",       sub:"少子化・移民・農地集積" },
-  { no:12, title:"エネルギー",     sub:"資源・地政学・再エネ" }
-];
-
-const selected = new Set();
+let activeNo = null;
 
 function renderCards() {
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-  categories.forEach(cat => {
+  Object.entries(summaries).forEach(([no, cat]) => {
+    const n = parseInt(no);
     const div = document.createElement('div');
-    div.className = 'card' + (selected.has(cat.no) ? ' selected' : '');
-    div.innerHTML = `
-      <div class="card-num">No.${String(cat.no).padStart(2,'0')} <span class="check">✓</span></div>
-      <div class="card-title">${cat.title}</div>
-      <div class="card-sub">${cat.sub}</div>
-    `;
-    div.onclick = () => toggle(cat.no);
+    div.className = 'card' + (activeNo === n ? ' active' : '');
+    div.innerHTML = `<div class="card-num">No.${String(n).padStart(2,'0')}</div><div class="card-title">${cat.title}</div><div class="card-sub">${cat.sub}</div>`;
+    div.onclick = () => toggleDetail(n);
     grid.appendChild(div);
   });
-  updateUI();
 }
 
-function toggle(no) {
-  selected.has(no) ? selected.delete(no) : selected.add(no);
+function toggleDetail(no) {
+  if (activeNo === no) { closeDetail(); return; }
+  activeNo = no;
+  const cat = summaries[no];
+  document.getElementById('detailTitle').textContent = cat.title;
+  document.getElementById('detailNo').textContent = `No.${String(no).padStart(2,'0')}`;
+  document.getElementById('detailBody').textContent = cat.content;
+  document.getElementById('detailWrap').classList.add('visible');
+  document.getElementById('detailWrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   renderCards();
 }
 
-function selectAll() {
-  categories.forEach(c => selected.add(c.no));
+function closeDetail() {
+  activeNo = null;
+  document.getElementById('detailWrap').classList.remove('visible');
   renderCards();
-}
-
-function clearAll() {
-  selected.clear();
-  renderCards();
-  document.getElementById('resultWrap').classList.remove('visible');
-}
-
-function updateUI() {
-  const n = selected.size;
-  document.getElementById('countBadge').textContent = `${n} / 12 分野`;
-  document.getElementById('analyzeBtn').disabled = n === 0;
-}
-
-async function analyze() {
-  const sel = [...selected].sort((a,b)=>a-b);
-  const names = sel.map(n => {
-    const c = categories.find(x=>x.no===n);
-    return `No.${n} ${c.title}`;
-  });
-
-  const rw = document.getElementById('resultWrap');
-  const rb = document.getElementById('resultBody');
-  const rt = document.getElementById('resultTitle');
-  const tags = document.getElementById('tagRow');
-
-  rt.textContent = `${names.length}分野 統合予測`;
-  tags.innerHTML = names.map(n=>`<span class="tag">${n}</span>`).join('');
-  rb.innerHTML = '<span class="spinner"></span><span class="loading-text">分析中...</span>';
-  rw.classList.add('visible');
-
-  const prompt = `あなたは福島県田村郡小野町在住の農業経営者（田畑8反・自律型経営）の学習パートナーです。
-
-以下の分野の学習知識を統合して、2026〜2032年の近未来予測・傾向を出してください。
-
-対象分野：${names.join('、')}
-
-出力形式：
-■ 統合的な構造分析（各分野がどう連動しているか）
-■ 年ごとの主要な変化の流れ（2026〜2032）
-■ 農業経営（福島県小野町・8反・自律型）への実践的示唆
-■ 今後の最重要監視ポイント
-
-簡潔かつ構造的に、800字程度でまとめてください。`;
-
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    const text = data.content?.map(b=>b.text||'').join('') || '結果を取得できませんでした。';
-    rb.textContent = text;
-  } catch(e) {
-    rb.textContent = 'エラーが発生しました。しばらくしてから再度お試しください。';
-  }
 }
 
 renderCards();
