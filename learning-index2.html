@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12分野 学習インデックス</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0e;
+    --surface: #151917;
+    --surface2: #1c2020;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --accent: #4a9e7f;
+    --accent-light: #6dbfa0;
+    --accent-dim: rgba(74,158,127,0.15);
+    --text: #e8ede9;
+    --text-muted: #8a9e91;
+    --text-dim: #556660;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+  header {
+    margin-bottom: 2.5rem;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    user-select: none;
+  }
+  .card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface2);
+    transform: translateY(-1px);
+  }
+  .card.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+  }
+  .card-num {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .card.active .card-num { color: var(--accent); }
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 3px;
+  }
+  .card.active .card-title { color: var(--accent-light); }
+  .card-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .detail-wrap {
+    display: none;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s ease;
+  }
+  .detail-wrap.visible { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .detail-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .detail-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .detail-no {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .detail-body {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.9;
+    white-space: pre-wrap;
+  }
+  .close-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px;
+    transition: all 0.15s;
+  }
+  .close-btn:hover {
+    color: var(--text-muted);
+    border-color: var(--border-hover);
+  }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">学習インデックス</div>
+    <h1>12分野 学習内容</h1>
+    <p>分野カードをタップすると学習内容が表示されます</p>
+  </header>
+
+  <div class="grid" id="cardGrid"></div>
+  <div class="detail-wrap" id="detailWrap">
+    <div class="detail-header">
+      <div class="detail-title" id="detailTitle"></div>
+      <div class="detail-no" id="detailNo"></div>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+    <span class="close-btn" onclick="closeDetail()">閉じる</span>
+  </div>
+
+  <footer>松本陽一 — 福島県田村郡小野町 農業経営</footer>
+</div>
+
+<script>
+const summaries = {
+  1: {
+    title: "経済指標",
+    sub: "金利・インフレ・雇用",
+    content: `■ 金利・金融政策
+・政策金利は中央銀行が設定し、消費・投資・景気全体に波及する
+・利上げ＝インフレ抑制・景気冷却、利下げ＝景気刺激という基本構造
+・実質金利（名目金利－インフレ率）と逆イールドが重要なシグナル
+
+■ インフレ・物価指数
+・主要指標：CPI・コアCPI・PCEデフレーター・PPI
+・インフレの種類：ディマンドプル型（需要超過）とコストプッシュ型（コスト高騰）
+・多くの中央銀行は2%インフレ目標を設定。低すぎるとデフレ、高すぎると購買力毀損
+
+■ 雇用・失業率
+・主要指標：失業率・NFP（米）・有効求人倍率（日）・労働参加率
+・失業率単独では実態を過小評価しやすく、労働参加率との併読が重要
+・FRBは「物価安定＋最大雇用」のデュアルマンデートを持つ
+
+■ 3指標の相互連関
+・景気好調→雇用増→賃金上昇→インフレ上昇→利上げ→景気冷却という循環が基本構造
+・地政学リスク起因のエネルギー高騰は供給側からインフレを押し上げるため、利上げで抑制しにくい構造的難題となる
+・指標は単独でなく、相互関係で読むことが核心`
+  },
+  2: {
+    title: "気候変動",
+    sub: "自然災害・温暖化",
+    content: `■ 気候変動の基礎メカニズム
+・温室効果ガス（CO₂・CH₄・N₂O）の増加により地球の平均気温が上昇
+・産業革命前比で既に約+1.1〜1.2℃上昇。2℃超えでティッピングポイントのリスクが急増
+・IPCCは2030年代前半に+1.5℃到達の可能性を警告
+
+■ 自然災害への影響
+・台風・ハリケーン：海面水温上昇により強度が増大
+・豪雨・洪水：大気中の水蒸気量増加（1℃上昇で約7%増）により短時間集中豪雨が増加
+・干ばつ：降水パターンの変化と蒸発量増加で内陸部の乾燥化が進行
+・森林火災：乾燥化・高温化により延焼規模が拡大
+
+■ 日本への影響
+・台風の大型化：上陸時に勢力を保つ事例が増加
+・線状降水帯：梅雨前線との相互作用で九州・中部等で頻発化
+・熱波・酷暑：農業・電力需要・熱中症に大きな影響
+・海面上昇：東京・大阪など低地沿岸都市のリスクが上昇
+
+■ 対策の枠組み
+・緩和策：排出削減。再生可能エネルギー・脱炭素・EV普及など
+・適応策：堤防強化・耐熱作物・早期警報システムなど
+・食料・水・エネルギーの「トリプルクライシス」リスクが地政学と連動`
+  },
+  3: {
+    title: "プロフィール",
+    sub: "小野町・8反・自律型",
+    content: `■ 基本プロフィール
+・福島県田村郡小野町在住の農業経営者
+・田畑8反を経営。トラクター・重機・農具一式を自己保有
+・経歴：東京アパレル業界→商業施設運営管理→株式トレーダー（独立）→就農
+
+■ 経営哲学・行動スタイル
+・「70〜80%の下準備を完了させ、残りの不確実性に対してリスクを取る」自律型経営
+・組織依存ではなく、個人の判断と実行力を軸に置く
+
+■ 学習・思考の目的
+・世界情勢・経済・気候変動など12分野を並行して学び、統合的に思考する
+・自身の生存戦略・経営判断に活かすことを目的としている
+
+■ AI活用体制
+・Claude（主軸・分析統合）＋Gemini（セカンドオピニオン・検証）の併用
+・12分野の学習チャット＋統合チャットで運用
+・各分野のサマリーを定期更新し、総合予測を導き出す体制`
+  },
+  4: {
+    title: "予言・スピリチュアル",
+    sub: "JT・LJ・藤原直哉",
+    content: `■ スピリットマンJT（ジョセフ・ティテル）
+・アメリカ人のサイキック・メディウム。20年以上の経歴を持つ
+・霊（スピリット）からビジョンやメッセージを受け取り予言する
+・毎年元旦に世界予言を公開
+
+■ サイキックLJ（ルイーズ・ジョーンズ）
+・イギリス在住のサイキッカー・占星術師
+・水晶玉による透視（クリスタルリーディング）とチャネリングを使用
+・「タイムラインは複数あり、起きない可能性もある」と自ら断りを入れる姿勢
+
+■ 藤原直哉（経済アナリスト）
+・東大経済学部卒。経済データ・歴史的サイクル・国際情勢の総合分析
+・大本（おおもと）神諭に基づく精神的背景を持つ
+・毎週「ワールドレポート」を発行
+
+■ 3人に共通する世界観
+・「現代文明は大きな転換期にある」という見立て
+・超常的な知覚と学術・歴史分析、異なるアプローチから同じ方向性の未来観を語る点が興味深い
+
+■ 学習の視点
+・予言の的中・外れよりも「なぜそう読むか」という思考の枠組みを参照する
+・スピリチュアルと分析的思考を「別レイヤー」として保持しながら統合的に活用する`
+  },
+  5: {
+    title: "国際情勢",
+    sub: "中東・ウクライナ・米中",
+    content: `■ 国際情勢を読む基本構造
+・紛争・外交・経済制裁は「各国の利害と思惑のすれ違い」として読む
+・停戦・和平は「誰が何を得るか」の利害計算で動く
+・地政学リスクはエネルギー・食料・金融を通じて農業経営に直結する
+
+■ ロシア・ウクライナ情勢の構造
+・「三者の思惑のすれ違い」が交渉を難しくする基本構造
+・停戦だけでは再侵攻を防げず、抑止の再設計が本質的課題
+・北朝鮮・中国・イランとの連携が新冷戦構造を形成
+
+■ 中東情勢の構造
+・イスラエル・イラン・湾岸諸国・米国の利害が複雑に絡み合う
+・ホルムズ海峡は世界の石油輸送量の約20〜30%が通過する最重要エネルギー咽喉部
+・中東の不安定化は原油価格・農業コスト・食料安全保障に直結する
+
+■ 米中関係・覇権争いの構造
+・技術・経済・軍事の3層で覇権争いが展開
+・「管理された緊張」と「複合的デカップリング」が同時進行
+・台湾問題はインド太平洋全体の安全保障と連動
+
+■ 日本の立ち位置
+・G7・NATO・日米同盟の交差点に置かれた構造的複雑さ
+・エネルギー・食料・安全保障の3点で「同盟頼みから自律型対応」への転換が迫られる`
+  },
+  6: {
+    title: "社会問題",
+    sub: "格差・AI・少子化",
+    content: `■ 格差・貧困問題
+・極度の貧困率は過去30年で約40%→約10%に劇的改善
+・ただし世界28億人以上が「脆弱層」として経済ショックで貧困転落リスクを抱える
+・貧困は経済問題にとどまらず、世代的不平等として固定化する構造を持つ
+
+■ デジタル化・AI・テクノロジー
+・誤情報・偽情報が世界経済フォーラムのリスク調査で上位を占める
+・自動化リスクは女性の職種に約2倍の割合で集中
+・AI導入による国家間・階層間の格差拡大をUNDPが警告
+
+■ 少子高齢化・人口問題
+・日本・韓国・イタリア・ドイツなど超高齢社会では年金危機と介護労働力不足が深刻化
+・少子化は経済成長・社会保障・農業担い手問題に連鎖する
+
+■ 移民問題
+・非自発的移住・強制退去は社会的分極化・人権侵食と連動する
+・受け入れ国の文化的摩擦と労働力補完という二面性を持つ
+
+■ 5テーマに共通する構造
+・富と権力の頂点集中、気候災害・経済ショック・紛争が開発の成果を消去
+・5問題は相互に連動する「複合的危機」として進行中`
+  },
+  7: {
+    title: "日本",
+    sub: "政治・経済・災害",
+    content: `■ 地理・自然・農業
+・国土の約70%が山地、農地は国土の約12%と少ない
+・農業は米作中心。高齢化（農家平均年齢約68歳）・担い手不足が深刻
+・細かな区画構造が大規模化を阻む構造的問題がある
+
+■ 政治・経済
+・議院内閣制・二院制。世界第4位のGDP（2023年ドイツに抜かれる）
+・30年超のデフレ後、2024年に日銀がマイナス金利を解除し転換点へ
+・少子化・社会保障費増大・財政悪化が長期的な構造問題
+
+■ 歴史・文化
+・縄文→弥生→大和朝廷→武士の時代→江戸260年の安定期→明治維新（1868年）
+・農耕社会由来の集団主義・協調性・自然への畏敬が文化の根底にある
+
+■ 地殻・災害リスク
+・4つのプレートが交差する世界有数の地震・火山大国
+・南海トラフ地震：今後30年以内に発生確率70〜80%。死者最大32万人の試算
+・東日本大震災（2011年）による農業への放射性物質汚染という深刻な問題が発生
+
+■ テーマ間の連関
+・地震リスク→農地の分散立地→大規模化困難→農業の非効率性という構造的連鎖
+・人口減少→農地集積のウィンドウ→自律型農業経営者の相対的優位という構造`
+  },
+  8: {
+    title: "宇宙・太陽系",
+    sub: "太陽活動・宇宙線",
+    content: `■ 太陽活動と地球への影響
+・太陽は11年周期で活動が変動。極大期はフレア・CMEが頻発
+・地磁気嵐・GPS障害・送電網障害を引き起こす可能性がある
+・黒点が少ない時代（マウンダー極小期）は小氷期と一致し、太陽活動と気候の連動は歴史的に確認されている
+
+■ 月の引力・潮汐力・地球への作用
+・月の引力は地球に潮汐力をもたらし、1日2回の満干潮を生む
+・月がなければ地軸は大きく揺れ気候が激変していた（地軸安定機能）
+・月の潮汐摩擦により地球の自転は年間1.4ms延長し続けている
+
+■ 地球の3層の防御構造
+・太陽圏（銀河宇宙線を弾くバブル）
+・地球磁気圏（溶融鉄の核が作る磁場で太陽風を偏向）
+・大気圏（電離層・オゾン層が残余を吸収）
+
+■ ミランコビッチサイクル
+・惑星重力の蓄積で地球の公転軌道・地軸傾斜・歳差運動が変化
+・氷河期・間氷期の主因。現在は間氷期の後半にあたる
+
+■ 農業・実生活との接点
+・太陽活動極大期：農機の自動走行GPS誤差・電波障害のリスク増大
+・大潮の時期：地下水位・土壌水分への微小影響
+・スベンスマルク効果：宇宙線増加→雲核形成→低層雲増加→寒冷化の連鎖`
+  },
+  9: {
+    title: "支配層・ディープステート",
+    sub: "エプスタイン・権力構造",
+    content: `■ エプスタイン事件の事実
+・ジェフリー・エプスタイン（1953〜2019）は金融家で未成年者への性的人身売買罪で有罪
+・2019年に拘置所内で死亡（公式は自殺）
+・裁判記録・文書公開によって証明されたエリート特権の実態
+
+■ パワーエリート概念（C・ライト・ミルズ、1956年）
+・政治・軍事・経済エリートの3者が相互に結びつき、民主的プロセスを経ずに意思決定する構造
+・エプスタイン事件はこの構造を可視化した事例として学術的にも引用される
+
+■ ディープステートの3つの意味
+・【歴史的事実】トルコ「デリン・デヴレット」：軍・諜報・マフィアが結びついた実在した非公式権力網
+・【学術的定義】軍産複合体・官僚機構が選挙によらず政策に影響を及ぼす構造的問題
+・【陰謀論的使用】トランプ政治運動・QAnonでの拡大使用。学術的概念との混同に注意
+
+■ 整理の視点
+・「ディープステート」は文脈によって意味が全く異なるため、使用者の意図と証明水準を常に見極める
+・「権力の集中」「二層の司法」「透明性の欠如」は民主主義の構造的課題として継続的に注視すべき問題`
+  },
+  10: {
+    title: "アメリカ・トランプ",
+    sub: "第2次政権・政策構造",
+    content: `■ 第2次トランプ政権の基本構造
+・支持基盤は「同床異夢」の3勢力：MAGA派（製造業再建・移民抑制）、テクノオリガルヒ（減税・規制緩和）、対中強硬派（デカップリング）
+・政策は内在的矛盾を抱え、「超実利主義」＝その都度の部分最適を成果として誇示するスタイル
+
+■ 主要政策の構造
+・関税・貿易：保護主義的関税を推進。「負の政策（関税）先行、正の政策（減税）後回し」の状態
+・エネルギー：化石燃料促進・クリーンエネルギー政策の大幅転換
+・移民：南部国境の不法越境抑制を重視
+・国際協調：多国間主義から後退する傾向
+
+■ 思惑と現実のギャップを読む視点
+・製造業雇用回復を掲げるが、投資はAI分野に集中する構造
+・恩恵は富裕層に偏り、低中所得層は関税負担増で消費抑制→「K字型経済」深刻化
+・軍事行動の政治的コストと経済的コストのバランスが中間選挙に影響
+
+■ 米国動向を読む上での重要視点
+・3勢力の利害対立が政策の一貫性を損なう
+・中間選挙を見据えた政治的インセンティブが政策転換の契機になる
+・米国の動向は日本の関税・エネルギー・安全保障政策に直結する`
+  },
+  11: {
+    title: "人口動態",
+    sub: "少子化・移民・農地集積",
+    content: `■ 人口ピラミッドの読み方
+・富士山型（拡大型）＝アフリカ等の発展途上国。人口ボーナス期
+・釣り鐘型（安定型）＝米国・一部欧州。社会保障が安定
+・壺型（縮小型）＝日本・韓国・ドイツ。少子高齢化が構造化
+・人口は20〜30年先まで「ほぼ確実に」予測できる唯一の指標
+
+■ 日本の人口減少タイムライン
+・2008年（約1億2,808万人）をピークに減少局面へ
+・2040年：団塊ジュニアが65歳超→高齢者約3,900万人に膨張（2040年問題）
+・2050年：1億人を割り込む。生産年齢人口が現在比約3割減
+・2070年：約8,700万人。外国人比率が約10%超の想定
+
+■ 少子高齢化の構造的影響
+・農業：基幹的農業従事者の平均年齢が68歳超→今後10〜15年で大量リタイア
+・農地集積のウィンドウが今後10年で最大化する
+・社会保障：2040年には約1.5人で1人を支える見通し
+
+■ 移民・外国人労働者との連動
+・2024年に技能実習制度廃止→育成就労制度へ移行
+・労働者の転職自由度が増し、農業経営者側の受け入れ戦略の見直しが必要
+
+■ 世界の人口動態
+・成長国：サハラ以南アフリカ・インド。人口ボーナス期で食料需要急増
+・縮小国：東アジア全域・東欧。中国は2022年に人口減少転換点を迎えた`
+  },
+  12: {
+    title: "エネルギー・資源地政学",
+    sub: "資源・再エネ・農業コスト",
+    content: `■ 世界のエネルギー構造
+・世界の一次エネルギーの約80%は依然として化石燃料が占める
+・OPECプラス（サウジ＋ロシア）が生産調整を握り、米国はシェール革命で最大産油国に
+・再エネはコスト面で既存電源を逆転しつつあるが、蓄電・系統整備が世界的課題
+
+■ エネルギーと覇権
+・米国：シェール＋LNG輸出でエネルギー自給達成。ペトロダラー体制で金融覇権も維持
+・ロシア：エネルギーを地政学的武器として使用
+・中国：太陽光パネル・EV・蓄電池の製造で「再エネ時代の覇権」を狙う
+・覇権の軸は「産出」から「製造技術・インフラ・通貨」へ転換中
+
+■ 資源地政学
+・レアアース：中国が採掘量68%・精製90%以上を独占
+・肥料原料：リンはモロッコ・中国、カリウムはロシア・ベラルーシに偏在
+・窒素肥料は天然ガス由来のため、エネルギー価格と農業コストが直結する
+
+■ 日本のエネルギー自給率と脆弱性
+・自給率15.3%という構造的脆弱性
+・国際連系線ゼロ・平地不足・系統の地域分断が複合的障壁
+・福島県は再エネ先行モデル地として戦略的に位置づけられ、小野町・田村郡エリアも実施圏内
+
+■ 農業経営者への示唆
+・燃料費（軽油・灯油）は中東・地政学情勢に直結する
+・化学肥料は地政学リスク直結品目。有機質肥料・堆肥化による資源循環が有効
+・ソーラーシェアリングと小型蓄電池の自家消費モデルが現実的選択肢`
+  }
+};
+
+let activeNo = null;
+
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  Object.entries(summaries).forEach(([no, cat]) => {
+    const n = parseInt(no);
+    const div = document.createElement('div');
+    div.className = 'card' + (activeNo === n ? ' active' : '');
+    div.innerHTML = `
+      <div class="card-num">No.${String(n).padStart(2,'0')}</div>
+      <div class="card-title">${cat.title}</div>
+      <div class="card-sub">${cat.sub}</div>
+    `;
+    div.onclick = () => toggleDetail(n);
+    grid.appendChild(div);
+  });
+}
+
+function toggleDetail(no) {
+  const wrap = document.getElementById('detailWrap');
+  if (activeNo === no) {
+    closeDetail();
+    return;
+  }
+  activeNo = no;
+  const cat = summaries[no];
+  document.getElementById('detailTitle').textContent = cat.title;
+  document.getElementById('detailNo').textContent = `No.${String(no).padStart(2,'0')}`;
+  document.getElementById('detailBody').textContent = cat.content;
+  wrap.classList.add('visible');
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  renderCards();
+}
+
+function closeDetail() {
+  activeNo = null;
+  document.getElementById('detailWrap').classList.remove('visible');
+  renderCards();
+}
+
+renderCards();
+</script>
+</body>
+</html>
