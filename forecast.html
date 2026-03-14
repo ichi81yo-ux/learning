@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12分野 統合予測 | 松本陽一</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0e;
+    --surface: #151917;
+    --surface2: #1c2020;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --accent: #4a9e7f;
+    --accent-light: #6dbfa0;
+    --accent-dim: rgba(74,158,127,0.15);
+    --text: #e8ede9;
+    --text-muted: #8a9e91;
+    --text-dim: #556660;
+    --selected-bg: rgba(74,158,127,0.12);
+    --selected-border: #4a9e7f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .noise {
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+  }
+
+  header {
+    margin-bottom: 3.5rem;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 2rem;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 480px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    user-select: none;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface2);
+    transform: translateY(-1px);
+  }
+
+  .card.selected {
+    background: var(--selected-bg);
+    border-color: var(--selected-border);
+  }
+
+  .card-num {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .card.selected .card-num { color: var(--accent); }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .card.selected .card-title { color: var(--accent-light); }
+
+  .card-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .check {
+    display: none;
+    float: right;
+    color: var(--accent);
+    font-size: 14px;
+    margin-top: -2px;
+  }
+
+  .card.selected .check { display: inline; }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    border-radius: 6px;
+    border: 0.5px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .btn:hover {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .btn-main {
+    background: var(--accent);
+    color: #0d1a14;
+    border-color: var(--accent);
+    font-weight: 500;
+    padding: 10px 28px;
+  }
+
+  .btn-main:hover {
+    background: var(--accent-light);
+    border-color: var(--accent-light);
+    color: #0d1a14;
+  }
+
+  .btn-main:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .count-badge {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+    align-self: center;
+  }
+
+  .result-wrap {
+    display: none;
+    margin-top: 2.5rem;
+    border-top: 0.5px solid var(--border);
+    padding-top: 2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .result-wrap.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--accent-dim);
+    color: var(--accent-light);
+    border: 0.5px solid rgba(74,158,127,0.3);
+    letter-spacing: 0.05em;
+  }
+
+  .result-body {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.9;
+    white-space: pre-wrap;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-hover);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--accent-light); }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">2026 — 2032 統合分析</div>
+    <h1>12分野<br>近未来予測システム</h1>
+    <p>経済・気候・地政学・AI・エネルギー・人口動態など12の学習分野を統合し、近未来の傾向と農業経営への示唆を導き出します。</p>
+  </header>
+
+  <div class="section-label">分野を選択</div>
+  <div class="grid" id="cardGrid"></div>
+
+  <div class="controls">
+    <button class="btn" onclick="selectAll()">全選択</button>
+    <button class="btn" onclick="clearAll()">リセット</button>
+    <button class="btn btn-main" id="analyzeBtn" onclick="analyze()" disabled>統合予測を生成</button>
+    <span class="count-badge" id="countBadge">0 / 12 分野</span>
+  </div>
+
+  <div class="result-wrap" id="resultWrap">
+    <div class="result-header">
+      <div class="result-title" id="resultTitle"></div>
+    </div>
+    <div class="tags" id="tagRow"></div>
+    <div class="result-body" id="resultBody"></div>
+  </div>
+
+  <footer>
+    <span>松本陽一 — 福島県小野町 農業経営</span>
+    <a href="./index.html">← 学習インデックスへ戻る</a>
+  </footer>
+
+</div>
+
+<script>
+const API_URL = "https://api.anthropic.com/v1/messages";
+
+const categories = [
+  { no:1,  title:"経済指標",       sub:"金利・インフレ・雇用" },
+  { no:2,  title:"気候変動",       sub:"自然災害・温暖化" },
+  { no:3,  title:"プロフィール",   sub:"小野町・8反・自律型" },
+  { no:4,  title:"予言・スピリチュアル", sub:"JT・LJ・藤原直哉" },
+  { no:5,  title:"国際情勢",       sub:"中東・ウクライナ・米中" },
+  { no:6,  title:"社会問題",       sub:"格差・AI・少子化" },
+  { no:7,  title:"日本",           sub:"政治・経済・災害" },
+  { no:8,  title:"宇宙・太陽系",   sub:"太陽活動・宇宙線" },
+  { no:9,  title:"支配層",         sub:"エプスタイン・権力構造" },
+  { no:10, title:"アメリカ",       sub:"トランプ・中間選挙" },
+  { no:11, title:"人口動態",       sub:"少子化・移民・農地集積" },
+  { no:12, title:"エネルギー",     sub:"資源・地政学・再エネ" }
+];
+
+const selected = new Set();
+
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  categories.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'card' + (selected.has(cat.no) ? ' selected' : '');
+    div.innerHTML = `
+      <div class="card-num">No.${String(cat.no).padStart(2,'0')} <span class="check">✓</span></div>
+      <div class="card-title">${cat.title}</div>
+      <div class="card-sub">${cat.sub}</div>
+    `;
+    div.onclick = () => toggle(cat.no);
+    grid.appendChild(div);
+  });
+  updateUI();
+}
+
+function toggle(no) {
+  selected.has(no) ? selected.delete(no) : selected.add(no);
+  renderCards();
+}
+
+function selectAll() {
+  categories.forEach(c => selected.add(c.no));
+  renderCards();
+}
+
+function clearAll() {
+  selected.clear();
+  renderCards();
+  document.getElementById('resultWrap').classList.remove('visible');
+}
+
+function updateUI() {
+  const n = selected.size;
+  document.getElementById('countBadge').textContent = `${n} / 12 分野`;
+  document.getElementById('analyzeBtn').disabled = n === 0;
+}
+
+async function analyze() {
+  const sel = [...selected].sort((a,b)=>a-b);
+  const names = sel.map(n => {
+    const c = categories.find(x=>x.no===n);
+    return `No.${n} ${c.title}`;
+  });
+
+  const rw = document.getElementById('resultWrap');
+  const rb = document.getElementById('resultBody');
+  const rt = document.getElementById('resultTitle');
+  const tags = document.getElementById('tagRow');
+
+  rt.textContent = `${names.length}分野 統合予測`;
+  tags.innerHTML = names.map(n=>`<span class="tag">${n}</span>`).join('');
+  rb.innerHTML = '<span class="spinner"></span><span class="loading-text">分析中...</span>';
+  rw.classList.add('visible');
+
+  const prompt = `あなたは福島県田村郡小野町在住の農業経営者（田畑8反・自律型経営）の学習パートナーです。
+
+以下の分野の学習知識を統合して、2026〜2032年の近未来予測・傾向を出してください。
+
+対象分野：${names.join('、')}
+
+出力形式：
+■ 統合的な構造分析（各分野がどう連動しているか）
+■ 年ごとの主要な変化の流れ（2026〜2032）
+■ 農業経営（福島県小野町・8反・自律型）への実践的示唆
+■ 今後の最重要監視ポイント
+
+簡潔かつ構造的に、800字程度でまとめてください。`;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b=>b.text||'').join('') || '結果を取得できませんでした。';
+    rb.textContent = text;
+  } catch(e) {
+    rb.textContent = 'エラーが発生しました。しばらくしてから再度お試しください。';
+  }
+}
+
+renderCards();
+</script>
+</body>
+</html>
